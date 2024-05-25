@@ -1,0 +1,45 @@
+#main{
+    background-color: #0f0f0f;
+}
+#title{
+    color: #ffffff;
+}
+
+#nav QToolButton{
+    width: 100px;
+    height: 40px;
+    background-color: #8ACAD5;
+    border: none;
+    color: #ffffff;
+}
+#nav QToolButton:hover{
+    width: 100px;
+    height: 40px;
+    background-color: rgb(255,255,255);
+    border: none;
+    color: #0f0f0f;
+}
+#python_btn{
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+#setting_btn{
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+#Ven_frame{
+    background-color: #0f0f0f;
+}
+#title1{
+    color: #8ACAD5;
+}
+#venvUi_btn_frame {
+    background-color: rgba(255,255,255,90);
+    border-radius: 15%;
+}
+#venvUi_btn_frame QToolButton{
+    background: transparent;
+}
+#venv_scroll1 {
+    border: none;
+}
