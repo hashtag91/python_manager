@@ -39,7 +39,12 @@
 }
 #venvUi_btn_frame QToolButton{
     background: transparent;
+    
 }
 #venv_scroll1 {
     border: none;
+    background-color: #0f0f0f;
+}
+#stackWidget {
+    background-color: #0f0f0f;
 }

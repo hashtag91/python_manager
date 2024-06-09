@@ -1,14 +1,90 @@
 from PyQt5.QtWidgets import (
     QScrollArea,QFrame, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, 
-                            QToolButton, QMainWindow, QApplication)
+    QToolButton, QWidget, QMainWindow, QApplication)
 from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QCursor, QFont, QIcon
+from PyQt5.QtGui import QCursor, QFont, QIcon, QPixmap
 from qtwidgets import AnimatedToggle
 import venv_script
 import sys
 import os
 from pywinauto import Application
 import pywinauto
+
+class Venv_details(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setStyleSheet("background-color: #e8e8e8;")
+        self.main_layout = QVBoxLayout()
+        self.setupUi()
+        self.setLayout(self.main_layout)
+    def setupUi(self):
+        title_layout = QHBoxLayout()
+        title = QLabel("Title")
+        title.setStyleSheet("color: #363636")
+        title.setFont(QFont("Arial Black",18,QFont.Bold))
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_layout.addWidget(title)
+        self.main_layout.addLayout(title_layout)
+
+        #PATH
+        self.path_frame = QFrame()
+        self.path_frame.setStyleSheet("border-radius: 15%")
+        self.path_layout = QHBoxLayout()
+        self.path_frame.setLayout(self.path_layout)
+        path_ico = QLabel()
+        path_ico.setPixmap(QPixmap("img/folder.svg").scaled(QSize(30,30),aspectRatioMode=Qt.AspectRatioMode.IgnoreAspectRatio, transformMode=Qt.TransformationMode.SmoothTransformation))
+        self.path_layout.addWidget(path_ico)
+        self.path_line = QLineEdit()
+        self.path_line.setStyleSheet("background: transparent; border: none")
+        self.path_line.setReadOnly(True)
+        self.path_layout.addWidget(self.path_line)
+        #Button panel
+        btn_panel = QFrame()
+        btn_panel.setStyleSheet("""
+            QFrame{
+                background: transparent;
+            }
+            QToolButton{
+                background: transparent;
+            }
+                                """)
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(0)
+        btn_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
+        btn_panel.setLayout(btn_layout)
+        self.add_btn = QToolButton()
+        self.add_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.add_btn.setIcon(QIcon("img/plus-dark"))
+        self.remove_btn = QToolButton()
+        self.remove_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.remove_btn.setIcon(QIcon("img/trash-dark"))
+        self.update_btn = QToolButton()
+        self.update_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.update_btn.setIcon(QIcon("img/update"))
+        btn_layout.addWidget(self.add_btn)
+        btn_layout.addWidget(self.remove_btn)
+        btn_layout.addWidget(self.update_btn)
+        #Pyhon version
+        self.python_frame = QFrame()
+        self.python_frame.setStyleSheet("background: transparent; border: none")
+        python_layout = QHBoxLayout()
+        self.python_frame.setLayout(python_layout)
+        python_ico =  QLabel()
+        python_ico.setPixmap(QPixmap("img/python-dark1.png").scaled(QSize(15,15),aspectRatioMode=Qt.AspectRatioMode.IgnoreAspectRatio, transformMode=Qt.TransformationMode.SmoothTransformation))
+        python_layout.addStretch()
+        python_layout.addWidget(python_ico)
+        self.python_line = QLineEdit()
+        self.python_line.setMaximumWidth(100)
+        self.python_line.setStyleSheet("background: transparent; border: none")
+        self.python_line.setReadOnly(True)
+        python_layout.addWidget(self.python_line)
+
+
+        self.main_layout.addWidget(self.path_frame)
+        self.main_layout.addWidget(btn_panel)
+        self.main_layout.addStretch()
+        self.main_layout.addWidget(self.python_frame)
+        
 
 class Venv(QFrame):
     def __init__(self, name:str, path:str, p_version:str,layout1:QVBoxLayout):
@@ -37,7 +113,7 @@ class Venv(QFrame):
         self.path_line = QLineEdit(self.path)
         self.path_line.setStyleSheet("background: transparent; border:none; color: #ffffff")
         self.path_line.setReadOnly(True)
-        self.p_version_line = QLineEdit(self.p_version)
+        self.p_version_line = QLineEdit(f"Python {self.p_version}")
         self.p_version_line.setStyleSheet("background: transparent; border:none; color: #ffffff")
         self.p_version_line.setReadOnly(True)
         self.switch_radio = AnimatedToggle(checked_color="#005dc7")
@@ -108,6 +184,7 @@ class Venv_frame(QFrame):
         self.setObjectName("Ven_frame")
         with open('style.css','r') as s:
             self.setStyleSheet(s.read())
+            s.close()
         self.layout = QVBoxLayout()
         self.setupUi()
         self.setLayout(self.layout)
@@ -144,6 +221,7 @@ class Venv_frame(QFrame):
         self.scroll_area = QScrollArea()
         self.scroll_area.setObjectName("venv_scroll1")
         scroll_frame = QFrame()
+        scroll_frame.setStyleSheet("background: transparent;")
         self.scroll_frame_layout = QVBoxLayout()
         self.data = venv_script.Data_collection().data_result()
         for i in self.data:
@@ -159,7 +237,7 @@ class Venv_frame(QFrame):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = QMainWindow()
-    win.setStyleSheet("background-color: #0f0f0f")
-    win.setCentralWidget(Venv_frame())
+    #win.setStyleSheet("background-color: #0f0f0f")
+    win.setCentralWidget(Venv_details())
     win.show()
     sys.exit(app.exec_())

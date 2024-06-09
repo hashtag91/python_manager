@@ -1,10 +1,12 @@
 from PyQt5.QtWidgets import (
     QToolButton,
     QFrame,QWidget, QApplication, QMainWindow, QTabWidget, QHBoxLayout, 
-                            QVBoxLayout, QLabel, QLineEdit, QPushButton)
+    QVBoxLayout, QLabel, QLineEdit, QPushButton, QStackedWidget)
 from PyQt5.QtGui import QIcon, QFont, QCursor
 from PyQt5.QtCore import Qt, pyqtSignal, QSize
 import sys
+from venv_Ui import Venv_frame
+from terminal import CMDWin
 
 class MainWin(QFrame):
     def __init__(self):
@@ -12,6 +14,7 @@ class MainWin(QFrame):
         self.setObjectName("main")
         with open("style.css", "r") as f:
             self.setStyleSheet(f.read())
+            f.close()
         self.layout = QVBoxLayout()
         self.setupUi()
         self.setLayout(self.layout)
@@ -63,9 +66,14 @@ class MainWin(QFrame):
         nav_pos_layout.addStretch()
         nav_pos_layout.addWidget(self.nav)
         nav_pos_layout.addStretch()
+
+        self.stack = QStackedWidget()
+        self.stack.setObjectName("stackWidget")
+        self.stack.addWidget(Venv_frame())
         
         self.layout.addLayout(nav_pos_layout)
-        self.layout.addStretch()
+        self.layout.addWidget(self.stack,2)
+        self.layout.addWidget(CMDWin())
         
         
 if __name__ == "__main__":
