@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QScrollArea,QFrame, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, 
-    QToolButton, QWidget, QMainWindow, QApplication)
+    QToolButton, QWidget, QMainWindow, QApplication, QTableWidget, QTableWidgetItem,QHeaderView, QDialog)
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QCursor, QFont, QIcon, QPixmap
 from qtwidgets import AnimatedToggle
@@ -9,6 +9,7 @@ import sys
 import os
 from pywinauto import Application
 import pywinauto
+from package_list import Packages
 
 class Venv_details(QWidget):
     def __init__(self):
@@ -19,11 +20,11 @@ class Venv_details(QWidget):
         self.setLayout(self.main_layout)
     def setupUi(self):
         title_layout = QHBoxLayout()
-        title = QLabel("Title")
-        title.setStyleSheet("color: #363636")
-        title.setFont(QFont("Arial Black",18,QFont.Bold))
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title_layout.addWidget(title)
+        self.title = QLabel("Title")
+        self.title.setStyleSheet("color: #363636")
+        self.title.setFont(QFont("Arial Black",18,QFont.Bold))
+        self.title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_layout.addWidget(self.title)
         self.main_layout.addLayout(title_layout)
 
         #PATH
@@ -79,10 +80,17 @@ class Venv_details(QWidget):
         self.python_line.setReadOnly(True)
         python_layout.addWidget(self.python_line)
 
+        self.tableau = QTableWidget()
+        self.tableau.setColumnCount(2)
+        self.tableau.setColumnWidth(1,20)
+        self.tableau.horizontalHeader().setSectionResizeMode(0,QHeaderView.Stretch)
+        self.tableau.setColumnWidth(1,150)
+        self.tableau.setHorizontalHeaderLabels(['Path','Version'])
+        self.tableau.horizontalHeader().stretchLastSection()
 
         self.main_layout.addWidget(self.path_frame)
         self.main_layout.addWidget(btn_panel)
-        self.main_layout.addStretch()
+        self.main_layout.addWidget(self.tableau)
         self.main_layout.addWidget(self.python_frame)
         
 
@@ -139,12 +147,26 @@ class Venv(QFrame):
         self.layout.addWidget(self.edit_btn)
         self.layout.addWidget(self.delete_btn)
         self.layout.addWidget(self.eye_btn)
+        self.details = QDialog()
+        self.venv_details = Venv_details()
+        detail_layout = QVBoxLayout()
+        detail_layout.addWidget(self.venv_details)
+        self.details.setLayout(detail_layout)
         
     def print_widget_position(self):
         for i in range(self.layout1.count()):
-            widget = self.layout1.itemAt(i).widget()
+            widget = self.layout1.itemAt(i).widget() #Obtenir le objet widget du boutton eye clicqué
             if widget.name_label.text() == self.name_label.text():
-                print(self.layout1.indexOf(widget))
+                print(self.layout1.indexOf(widget)) # Avoir la position du widget dans le layout pour pouvoir le manipuler
+                self.venv_details.title.setText(self.name_label.text())
+                self.venv_details.path_line.setText(self.path_line.text())
+                self.venv_details.python_line.setText(self.p_version_line.text())
+                self.packages = Packages(widget.path_line.text()).data()
+                self.venv_details.tableau.setRowCount(len(self.packages))
+                for row, row_data in enumerate(self.packages): #avoir l'indexe et les valeurs de chaque ligne
+                    for column, values in enumerate(row_data): #avoir l'indexe la valeur de chaque colonne de la ligne
+                        self.venv_details.tableau.setItem(row, column, QTableWidgetItem(values))
+                self.details.exec()
                 break
     def activate_venv(self):
         for i in range(self.layout1.count()):
@@ -212,6 +234,7 @@ class Venv_frame(QFrame):
         self.refresh_btn.setMinimumSize(QSize(35,35))
         self.refresh_btn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.refresh_btn.setToolTip("Refresh")
+        self.refresh_btn.clicked.connect(self.my_refresh)
         btn_frame_layout.addStretch()
         btn_frame_layout.addWidget(self.add_btn)
         btn_frame_layout.addWidget(self.refresh_btn)
@@ -233,7 +256,11 @@ class Venv_frame(QFrame):
         self.layout.addWidget(btn_frame)
         self.layout.addWidget(self.scroll_area)
         self.layout.addStretch()
-
+        
+    def my_refresh(self):
+        venv_script.Venv_found()
+        print("hello")
+"""
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = QMainWindow()
@@ -241,3 +268,4 @@ if __name__ == "__main__":
     win.setCentralWidget(Venv_details())
     win.show()
     sys.exit(app.exec_())
+"""

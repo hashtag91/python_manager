@@ -74,6 +74,8 @@ class MainWin(QFrame):
         self.layout.addLayout(nav_pos_layout)
         self.layout.addWidget(self.stack,2)
         self.layout.addWidget(CMDWin())
+
+        
         
         
 if __name__ == "__main__":
