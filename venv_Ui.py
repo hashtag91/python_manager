@@ -1,15 +1,16 @@
 from PyQt5.QtWidgets import (
     QScrollArea,QFrame, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, 
-    QToolButton, QWidget, QMainWindow, QApplication, QTableWidget, QTableWidgetItem,QHeaderView, QDialog)
+    QToolButton, QWidget, QTableWidget, QTableWidgetItem,QHeaderView, QDialog)
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QCursor, QFont, QIcon, QPixmap
 from qtwidgets import AnimatedToggle
 import venv_script
-import sys
 import os
+import sys
 from pywinauto import Application
 import pywinauto
 from package_list import Packages
+import sqlite3
 
 class Venv_details(QWidget):
     def __init__(self):
@@ -161,7 +162,7 @@ class Venv(QFrame):
                 self.venv_details.title.setText(self.name_label.text())
                 self.venv_details.path_line.setText(self.path_line.text())
                 self.venv_details.python_line.setText(self.p_version_line.text())
-                self.packages = Packages(widget.path_line.text()).data()
+                self.packages = Packages(widget.path_line.text(),self.name_label.text()).data()
                 self.venv_details.tableau.setRowCount(len(self.packages))
                 for row, row_data in enumerate(self.packages): #avoir l'indexe et les valeurs de chaque ligne
                     for column, values in enumerate(row_data): #avoir l'indexe la valeur de chaque colonne de la ligne
@@ -259,13 +260,3 @@ class Venv_frame(QFrame):
         
     def my_refresh(self):
         venv_script.Venv_found()
-        print("hello")
-"""
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    win = QMainWindow()
-    #win.setStyleSheet("background-color: #0f0f0f")
-    win.setCentralWidget(Venv_details())
-    win.show()
-    sys.exit(app.exec_())
-"""

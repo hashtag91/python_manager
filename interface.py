@@ -61,7 +61,7 @@ class MainWin(QFrame):
         nav_layout.addWidget(self.pip_btn)
         nav_layout.addWidget(self.envir_btn)
         nav_layout.addWidget(self.setting_btn)
-        self.nav.setLayout(nav_layout)
+        self.nav.setLayout(nav_layout) 
         nav_pos_layout = QHBoxLayout() #Ce layout permet de maintenir le navbar au milieu horizontalement
         nav_pos_layout.addStretch()
         nav_pos_layout.addWidget(self.nav)

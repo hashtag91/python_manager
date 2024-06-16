@@ -34,7 +34,7 @@ class Venv_found:
     def __init__(self):
         envs = find_virtual_envs()
         self.venvs_dict = {}
-        Db_deletion("./databases/venv.db",'venvs')
+        Db_deletion("databases/venv.db",'venvs')
         if envs:
             for env,path in envs.items():
                 version = read_cfg(path)
@@ -66,7 +66,7 @@ class Db_deletion:
         
 class Data_collection:
     def __init__(self):
-        conn = sqlite3.connect("./databases/venv.db")
+        conn = sqlite3.connect("databases/venv.db")
         cur = conn.cursor()
         req = "SELECT * FROM venvs"
         self.data = cur.execute(req)
