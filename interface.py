@@ -70,12 +70,14 @@ class MainWin(QFrame):
         self.stack = QStackedWidget()
         self.stack.setObjectName("stackWidget")
         self.stack.addWidget(Venv_frame())
+
+        self.cmd = CMDWin()
         
         self.layout.addLayout(nav_pos_layout)
         self.layout.addWidget(self.stack,2)
-        self.layout.addWidget(CMDWin())
+        self.layout.addWidget(self.cmd)
 
-        
+        self.cmd.run_command("pip install pandas")
         
         
 if __name__ == "__main__":

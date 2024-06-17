@@ -20,12 +20,14 @@ class Packages:
         super().__init__()
         self.path = path
         if "-" in table:
+            #Si le nom de la table contient un '-', il est splitter pour récuperer la 1ère partie
             self.table = table.split("-")[0]
         else:
             self.table = table
-        self.data_list = []
-        self.my_data = []
-        # Commande pour lister les packages installés dans l'environnement virtuel
+
+        self.data_list = [] # Qui contiendra la liste des données si la table est déjà crée
+        self.my_data = [] #Qui contiendra la liste des données si la table vient d'être crée
+        
         try:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             # Changer le répertoire de travail
@@ -36,6 +38,7 @@ class Packages:
             conn.commit()
             conn.close()
         except:
+            # Commande pour lister les packages installés dans l'environnement virtuel
             os.chdir(os.path.expanduser('~'))
             command = f"{self.path}/Scripts"
             with open(f"{command}/activate.bat",'r+') as f:
@@ -57,6 +60,7 @@ class Packages:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             # Changer le répertoire de travail
             os.chdir(current_dir)
+            #Créer et y insérer des données une table avec le nom de l'environnement virtuel selectionné
             conn = sqlite3.connect("databases/venv.db")
             cur = conn.cursor()
             cur.execute(f"""CREATE TABLE IF NOT EXISTS {self.table} (

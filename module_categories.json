@@ -1,0 +1,19 @@
+{
+    "All Categories":"allCategories",
+    "Base":"base",
+    "File Handling":"fichier",
+    "Serialization":"serie",
+    "Networks and Internet":"reseau",
+    "Concurrent programming":"concurrence",
+    "Development tools":"developement",
+    "Data Analysis":"data",
+    "Machine learning":"ml",
+    "Data visualization":"visualization",
+    "Web development":"web",
+    "Tests et QA":"test",
+    "Database management":"database",
+    "DevOps tools":"devops",
+    "Web automation and scraping":"scraping",
+    "Image manipulation":"images",
+    "Natural Language":"naturalLanguage"
+}

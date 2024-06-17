@@ -173,7 +173,7 @@ class CMDWin(QWidget):
         self.textWindow.setFocus()
         self.textWindow.appendPlainText(self.cmdWindow.toPlainText()+cli[0])
         #cli = shlex.split(self.cmdWindow.toPlainText().replace(self.name, '').replace("'", '"'), posix=False)
-        cmd = str(cli[0]) 
+        cmd = str(cli[0])
 
         if cmd == "exit":
             quit()
@@ -189,7 +189,8 @@ class CMDWin(QWidget):
             self.proc.setWorkingDirectory(os.getcwd())
             print("Directory", self.proc.workingDirectory())
             del cli[0]
-            if (QStandardPaths.findExecutable(cmd)):
+            #if (QStandardPaths.findExecutable(cmd)):
+            try:
                 self.cmdlist.append(self.cmdWindow.toPlainText().replace(self.name, ""))
                 print("Command", cmd,  "found")
                 t = " ".join(cli)
@@ -203,11 +204,11 @@ class CMDWin(QWidget):
                     else:
                         self.proc.start(cmd + " " + t)
                         print("running", (cmd + " " + t))
-            else:
+            except:
                 print("Command not found ...")
                 self.textWindow.appendPlainText("Command not found ...")
                 self.cursorEnd()
-
+                
     def dataReady(self):
         out = ""
         try:

@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (
     QScrollArea,QFrame, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, 
-    QToolButton, QWidget, QTableWidget, QTableWidgetItem,QHeaderView, QDialog)
+    QToolButton, QWidget, QTableWidget, QTableWidgetItem,QHeaderView, QDialog, QStackedWidget,
+    QApplication, QMainWindow, QComboBox, QListWidget)
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QCursor, QFont, QIcon, QPixmap
 from qtwidgets import AnimatedToggle
@@ -11,6 +12,88 @@ from pywinauto import Application
 import pywinauto
 from package_list import Packages
 import sqlite3
+import json
+
+class AddPackage(QWidget):
+    def __init__(self,cmd,stack:QStackedWidget):
+        super().__init__()
+        self.cmd = cmd
+        self.stack = stack
+        self.layout = QVBoxLayout()
+        self.setupUi()
+        self.setLayout(self.layout)
+    def setupUi(self):
+        title_line_layout = QHBoxLayout()
+        self.back_btn = QToolButton()
+        self.back_btn.setIcon(QIcon("img/back.svg"))
+        self.back_btn.setIconSize(QSize(15,15))
+        self.back_btn.setText('Back')
+        self.back_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        self.back_btn.setFixedHeight(35)
+        self.back_btn.clicked.connect(self.stack_change)
+        title_line_layout.addWidget(self.back_btn)
+        title = QLabel("Install Package")
+        title.setFont(QFont("Arial Black",18, QFont.Bold))
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_line_layout.addWidget(title)
+        self.search = QLineEdit()
+        self.search.setPlaceholderText("Search")
+        self.search.setFixedHeight(40)
+        self.search.setStyleSheet("""
+                                    background-color: rgb();
+                                    border-radius: 5px;
+                                  """)
+        self.search.textChanged.connect(self.searchField)
+        with open("module_categories.json",'r') as f:
+            self.my_categories_dict = json.loads(f.read())
+            f.close()
+
+        self.packages = QListWidget()
+        self.packages.currentItemChanged.connect(self.packagesSelected)
+        self.category = QComboBox()
+        self.category.currentTextChanged.connect(self.categoriesCombobox)
+        self.category.setFixedHeight(40)
+        categories = ['All Categories','Base','File Handling','Serialization','Networks and Internet','Concurrent programming',
+                      'Development tools','Data Analysis','Machine learning','Data visualization',
+                      'Web development','Tests et QA','Database management','DevOps tools','Web automation and scraping',
+                      'Image manipulation','Natural Language']
+        self.category.addItems(categories)
+        self.install_btn = QToolButton()
+        self.install_btn.setText("Install")
+        self.install_btn.setFixedSize(100,50)
+        self.install_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_layout = QHBoxLayout()
+        btn_layout.addWidget(self.install_btn)
+        btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.layout.addLayout(title_line_layout)
+        self.layout.addWidget(self.search)
+        self.layout.addWidget(self.category)
+        self.layout.addWidget(self.packages)
+        self.layout.addLayout(btn_layout)
+
+    def categoriesCombobox(self):
+        conn = sqlite3.connect("databases/packages.db")
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM {self.my_categories_dict[self.category.currentText()]}")
+        data = cur.fetchall()
+        conn.commit()
+        conn.close()
+        self.packages.clear()
+        for i in data:
+            self.packages.addItem(i[0])
+    def packagesSelected(self):
+        try:
+            self.search.setText(self.packages.currentItem().text())
+        except:
+            self.search.clear()
+    def searchField(self):
+        if self.search.text() == "":
+            self.install_btn.setEnabled(False)
+        else:
+            self.install_btn.setEnabled(True)
+    def stack_change(self):
+        self.stack.setCurrentIndex(self.stack.currentIndex()-1)
 
 class Venv_details(QWidget):
     def __init__(self):
@@ -57,6 +140,7 @@ class Venv_details(QWidget):
         self.add_btn = QToolButton()
         self.add_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.add_btn.setIcon(QIcon("img/plus-dark"))
+        self.add_btn.clicked.connect(self.stack_change)
         self.remove_btn = QToolButton()
         self.remove_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.remove_btn.setIcon(QIcon("img/trash-dark"))
@@ -89,10 +173,16 @@ class Venv_details(QWidget):
         self.tableau.setHorizontalHeaderLabels(['Path','Version'])
         self.tableau.horizontalHeader().stretchLastSection()
 
+        self.stack = QStackedWidget()
+        self.stack.addWidget(self.tableau)
+        self.stack.addWidget(AddPackage("cmd",self.stack))
+
         self.main_layout.addWidget(self.path_frame)
         self.main_layout.addWidget(btn_panel)
-        self.main_layout.addWidget(self.tableau)
+        self.main_layout.addWidget(self.stack)
         self.main_layout.addWidget(self.python_frame)
+    def stack_change(self):
+        self.stack.setCurrentIndex(1)
         
 
 class Venv(QFrame):
@@ -260,3 +350,11 @@ class Venv_frame(QFrame):
         
     def my_refresh(self):
         venv_script.Venv_found()
+"""
+if __name__ == "__main__":
+    App = QApplication(sys.argv)
+    win = QMainWindow()
+    win.setCentralWidget(AddPackage("hello"))
+    win.show()
+    sys.exit(App.exec())
+"""
